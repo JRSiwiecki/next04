@@ -7,6 +7,8 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import getAllUsers from "@/lib/getAllUsers";
 
+import { notFound } from "next/navigation";
+
 type Params = {
     params: {
         userId: string;
@@ -19,6 +21,12 @@ export async function generateMetadata({
     const userData: Promise<User> = getUser(userId);
     const user: User = await userData;
 
+    if (!user) {
+        return {
+            title: "User Not Found",
+        };
+    }
+
     return {
         title: user.name,
         description: `This is ${user.name}'s page.`,
@@ -30,6 +38,10 @@ export default async function UserPage({ params: { userId } }: Params) {
     const userPostsData: Promise<Post[]> = getUserPosts(userId);
 
     const user = await userData;
+
+    if (!user) {
+        notFound();
+    }
 
     return (
         <>
